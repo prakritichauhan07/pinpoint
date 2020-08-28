@@ -75,8 +75,8 @@
 
     <properties>
         <encoding>UTF-8</encoding>
-        <jdk.version>1.6</jdk.version>
-        <jdk.home>${env.JAVA_6_HOME}</jdk.home>
+        <jdk.version>1.8</jdk.version>
+        <jdk.home>${env.JAVA_8_HOME}</jdk.home>
         <test.jdk.home>${jdk.home}</test.jdk.home>
 
         <!-- hbase -->
@@ -1052,12 +1052,6 @@
                                 </requireJavaVersion>
                                 <requireEnvironmentVariable>
                                     <variableName>JAVA_HOME</variableName>
-                                </requireEnvironmentVariable>
-                                <requireEnvironmentVariable>
-                                    <variableName>JAVA_6_HOME</variableName>
-                                </requireEnvironmentVariable>
-                                <requireEnvironmentVariable>
-                                    <variableName>JAVA_7_HOME</variableName>
                                 </requireEnvironmentVariable>
                                 <requireEnvironmentVariable>
                                     <variableName>JAVA_8_HOME</variableName>
