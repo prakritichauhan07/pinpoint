@@ -3,6 +3,9 @@ language: java
 os: linux
 dist: bionic
 
+arch:
+  - amd64
+  - arm64
 cache:
   directories:
     - $HOME/.m2
