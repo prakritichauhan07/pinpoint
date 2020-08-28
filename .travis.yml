@@ -1,5 +1,7 @@
 sudo : required
 language: java
+os: linux
+dist: bionic
 
 cache:
   directories:
@@ -7,41 +9,41 @@ cache:
     - web/src/main/angular/node_modules
     - node_install
 
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
-
-jdk:
- - oraclejdk8
-
 env:
   global:
    - secure: NZHVmbkzMZGm9M71n5sitb47tyHJE/byA8l6u2zqdhfeEZsrdhZKpgTRYdQYa4btsBHoO/hImziRMz2SuaQgGyK3EiizzZfFqzzqfMvq1WXKeNNI46QtN9RKA60o+/TIptmJADIXfAq5KEjOBOVIyN93Wsf0+4LP13Ve+UDFG38=
-   - JAVA_6_HOME=/usr/lib/jvm/java-6-openjdk-amd64
-     JAVA_7_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-     JAVA_8_HOME=/usr/lib/jvm/java-8-oracle
-     JAVA_9_HOME=/usr/lib/jvm/java-9-oracle
 
 install:
  - set -o pipefail
- - ls -al $JAVA_6_HOME
- - ls -al $JAVA_7_HOME
+ - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then
+   sudo apt-get install openjdk-8-jdk;
+   export JAVA_8_HOME=/usr/lib/jvm/java-8-openjdk-arm64;
+   export JAVA_HOME=$JAVA_8_HOME;
+   wget https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9%2B181/OpenJDK9U-jdk_aarch64_linux_hotspot_9_181.tar.gz;
+   tar -zxvf OpenJDK9U-jdk_aarch64_linux_hotspot_9_181.tar.gz;
+   sudo mv jdk-9+181/ java-9-openjdk-arm64;
+   sudo mv java-9-openjdk-arm64  /usr/lib/jvm/;
+   export JAVA_9_HOME=/usr/lib/jvm/java-9-openjdk-arm64;
+   else
+   sudo apt-get install openjdk-8-jdk;
+   export JAVA_8_HOME=/usr/lib/jvm/java-8-openjdk-amd64;
+   export JAVA_HOME=$JAVA_8_HOME;
+   wget https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_linux_hotspot_9.0.4_11.tar.gz;
+   tar -zxvf OpenJDK9U-jdk_x64_linux_hotspot_9.0.4_11.tar.gz;
+   sudo mv jdk-9.0.4+11 java-9-openjdk-amd64;
+   sudo mv java-9-openjdk-amd64  /usr/lib/jvm/;
+   export JAVA_9_HOME=/usr/lib/jvm/java-9-openjdk-amd64;
+   fi
  - ls -al $JAVA_8_HOME
  - ls -al $JAVA_9_HOME
- - $JAVA_6_HOME/bin/java -version
- - $JAVA_7_HOME/bin/java -version
  - $JAVA_8_HOME/bin/java -version
  - $JAVA_9_HOME/bin/java -version
  - ./mvnw install -DskipTests=true -Plocal -Dmaven.javadoc.skip=true -B -V | grep -Fv '[copy'
 
 script:
- - jdk_switcher use oraclejdk8
+ - jdk_switcher use openjdk8
  - ./mvnw clover:setup test -Plocal,test clover:aggregate clover:clover -e | grep -Fv 'DEBUG' | grep -Fv '[copy'
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)
  - bash ./doc/scripts/deployGitPage.sh
-
-dist:
- - trusty
